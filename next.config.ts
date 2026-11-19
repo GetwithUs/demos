@@ -3,9 +3,23 @@ import type { NextConfig } from "next";
 const isDev = process.env.NODE_ENV === "development";
 
 /**
+ * The main site's security headers (GetwithUs/website, next.config.ts and
+ * docs/decisions/0002-security-headers.md), minus what only the main site needs. These pages
+ * are served on getwithus.in/demos through that site, which adds its own copies of these
+ * headers, and which copy wins depends on the platform (with next dev or next start, this
+ * app's replace the main site's). So both must allow the same things; change them together.
+ * tests/security-headers.test.ts checks the parts that matter.
+ *
+ * Two deliberate differences from the main site:
+ * - No Cloudflare Turnstile sources: nothing here uses it.
+ * - No upgrade-insecure-requests: every file comes from this origin by relative URL, so on
+ *   HTTPS it would change nothing, and it broke /demos through a main site running on plain
+ *   HTTP (local development, or a phone on the local network), which fetches these pages
+ *   from the live demos app by default.
+ *
  * Everything is self-hosted (fonts through next/font, photos imported from src), so the
- * policy allows this origin only. The demos are served on getwithus.in/demos through the
- * main site, so "self" is getwithus.in there; visit counts go to the main site's /gwr proxy.
+ * policy allows this origin only; "self" is getwithus.in there, and visit counts go to the
+ * main site's /gwr proxy. worker-src only mirrors the main site; nothing here uses workers.
  */
 const contentSecurityPolicy = [
   "default-src 'self'",
@@ -14,12 +28,22 @@ const contentSecurityPolicy = [
   "img-src 'self' data: blob:",
   "font-src 'self'",
   "connect-src 'self'",
+  "worker-src 'self' blob:",
   "frame-src 'none'",
-  "frame-ancestors 'self'",
+  "frame-ancestors 'none'",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
 ].join("; ");
+
+const securityHeaders = [
+  { key: "Content-Security-Policy", value: contentSecurityPolicy },
+  { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+  { key: "X-Frame-Options", value: "DENY" },
+];
 
 const nextConfig: NextConfig = {
   // Served from the main site at getwithus.in/demos (Next.js multi-zones).
@@ -50,12 +74,9 @@ const nextConfig: NextConfig = {
       {
         source: "/:path*",
         headers: [
+          ...securityHeaders,
           // Demo businesses are not real: keep every page out of search results.
           { key: "X-Robots-Tag", value: "noindex, nofollow" },
-          { key: "Content-Security-Policy", value: contentSecurityPolicy },
-          { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
         ],
       },
     ];
