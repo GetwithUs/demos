@@ -39,6 +39,12 @@ const nextConfig: NextConfig = {
       },
     },
   },
+  async redirects() {
+    return [
+      // This project's own address (outside getwithus.in) opens on the demos index, not a 404.
+      { source: "/", destination: "/demos", basePath: false, permanent: false },
+    ];
+  },
   async headers() {
     return [
       {
