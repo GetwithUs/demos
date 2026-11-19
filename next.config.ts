@@ -3,14 +3,23 @@ import type { NextConfig } from "next";
 const isDev = process.env.NODE_ENV === "development";
 
 /**
- * The same security headers as the main site (GetwithUs/website, next.config.ts and
- * docs/decisions/0002-security-headers.md). These pages are served on getwithus.in/demos
- * through that site, which adds its own copies of these headers; which copy wins depends on
- * the platform, so the two sets must stay identical. Change both together.
+ * The main site's security headers (GetwithUs/website, next.config.ts and
+ * docs/decisions/0002-security-headers.md), minus what only the main site needs. These pages
+ * are served on getwithus.in/demos through that site, which adds its own copies of these
+ * headers, and which copy wins depends on the platform (with next dev or next start, this
+ * app's replace the main site's). So both must allow the same things; change them together.
+ * tests/security-headers.test.ts checks the parts that matter.
+ *
+ * Two deliberate differences from the main site:
+ * - No Cloudflare Turnstile sources: nothing here uses it.
+ * - No upgrade-insecure-requests: every file comes from this origin by relative URL, so on
+ *   HTTPS it would change nothing, and it broke /demos through a main site running on plain
+ *   HTTP (local development, or a phone on the local network), which fetches these pages
+ *   from the live demos app by default.
  *
  * Everything is self-hosted (fonts through next/font, photos imported from src), so the
  * policy allows this origin only; "self" is getwithus.in there, and visit counts go to the
- * main site's /gwr proxy.
+ * main site's /gwr proxy. worker-src only mirrors the main site; nothing here uses workers.
  */
 const contentSecurityPolicy = [
   "default-src 'self'",
@@ -25,8 +34,6 @@ const contentSecurityPolicy = [
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
-  // HTTPS only on Vercel, so `next start` on plain-HTTP localhost keeps working.
-  ...(process.env.VERCEL === "1" ? ["upgrade-insecure-requests"] : []),
 ].join("; ");
 
 const securityHeaders = [
