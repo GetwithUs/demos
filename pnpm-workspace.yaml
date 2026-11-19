@@ -1,0 +1,7 @@
+allowBuilds:
+  esbuild: true
+  # sharp ships prebuilt binaries; its install script only matters for builds from source.
+  sharp: false
+  unrs-resolver: false
+minimumReleaseAgeExclude:
+  - lucide-react@1.66.0
