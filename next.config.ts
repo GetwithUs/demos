@@ -66,15 +66,18 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return {
       beforeFiles: [
-        // Prefetches through getwithus.in. The main site uses Partial Prerendering, so on
-        // Vercel it turns a segment prefetch (the Next-Router-Segment-Prefetch header) into
-        // a path like /demos/shop.segments/_tree.segment.rsc before forwarding it here. This
-        // app has no such files, so map the path back to the page; the header still comes
-        // along, and the page answers it as it does a direct prefetch. Without this every
-        // prefetch through the main site was a 404 and links lost their instant navigation.
-        // Only for RSC requests, so a .segments address is never a second URL for a page.
-        // If this app ever turns on cacheComponents (and so writes real .segments files),
-        // remove this rule: it would hide them.
+        // Prefetches through getwithus.in. On Vercel the main site turns a segment prefetch
+        // (the Next-Router-Segment-Prefetch header) into its file path, such as
+        // /demos/skincare/shop.segments/_tree.segment.rsc, and forwards that here with the
+        // prefetch headers still attached. This project's own Vercel routing then rewrites
+        // it into a segment path a second time (…shop.segments/_tree.segment.rsc.segments/
+        // _tree.segment.rsc), which does not exist: every prefetch through the main site was
+        // a 404, and links lost their instant navigation. The segment files themselves exist
+        // (Next writes them for static pages); sent straight here, the same request is a 200.
+        // beforeFiles rewrites run before Vercel's segment rewrite (vercel/vercel,
+        // packages/next/src/server-build.ts), so mapping the path back to the page lets that
+        // rewrite run once and land on the real file. Only for RSC requests, so a .segments
+        // address is never a second URL for a page.
         {
           source: "/:path*.segments/:segment*",
           has: [{ type: "header", key: "rsc", value: "1" }],

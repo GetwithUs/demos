@@ -31,6 +31,9 @@ pnpm build
   (the proxy exists only there), only with `NEXT_PUBLIC_POSTHOG_KEY` set (see `.env.example`),
   and never when the browser asks not to be tracked. Local runs and this project's own Vercel
   address send nothing.
-- Prefetches through getwithus.in: the main site turns segment prefetches into `.segments` paths,
-  which a `beforeFiles` rewrite in `next.config.ts` maps back to the page (see the comment there).
+- Prefetches through getwithus.in: the main site forwards segment prefetches as `.segments` paths
+  with their headers, and this project's Vercel routing would rewrite them a second time into a
+  path that does not exist. A `beforeFiles` rewrite in `next.config.ts` maps them back to the page
+  first, so the segment rewrite runs once (see the comment there). The demos index is handled by
+  the main site's rewrites, since those requests arrive outside this app's basePath.
 - Research behind each demo: `docs/research/`.
