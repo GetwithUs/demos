@@ -1,6 +1,21 @@
 # Oruvi Skin photo slots
 
-Product imagery is drawn in code (components/ProductVisual.tsx), so only these lifestyle photos are needed. Each file is a labelled placeholder at the exact size the design uses. Replace a file with a real photo under the same name and size (or the same aspect ratio, larger is fine). Pages import them statically, so nothing else changes.
+Product imagery is drawn in code (components/ProductVisual.tsx), so only these lifestyle photos are needed. Each file is a free Unsplash photo (Unsplash License: free to use and edit, no attribution required), cropped to the exact size the design uses. To swap one, replace the file under the same name and size (or the same aspect ratio, larger is fine). Pages import them statically, so nothing else changes.
+
+## Sources
+
+| File          | Unsplash photo                          | Edits                            |
+| ------------- | --------------------------------------- | -------------------------------- |
+| hero.jpg      | https://unsplash.com/photos/uHCrVTaZ-o0 | Cropped                          |
+| texture.jpg   | https://unsplash.com/photos/kD9qprR6HBI | Cropped and mirrored left-right  |
+| routine.jpg   | https://unsplash.com/photos/Vpcy3ytvQVw | Cropped                          |
+| community.jpg | https://unsplash.com/photos/Bt05TbinesM | Cropped                          |
+| founder.jpg   | https://unsplash.com/photos/PMdhuf3r8Sg | Cropped                          |
+| about-lab.jpg | https://unsplash.com/photos/cuqp2Jzz_lY | Cropped                          |
+
+The people shown are models, not the (made-up) brand's founder or customers.
+
+## What each slot needs
 
 | File          | Size (px)                                | Where it shows                                                                                     | What it should show                                                                                                                                                                                                             | Unsplash search phrase                            |
 | ------------- | ---------------------------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
