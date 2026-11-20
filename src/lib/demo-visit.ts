@@ -10,14 +10,24 @@ export type DemoSlug = keyof typeof DEMOS;
 const CAPTURE_URL = "/gwr/i/v0/e/";
 
 /**
+ * Where the main site (and its /gwr proxy) serves the demos. Only the bare domain: the main
+ * site redirects www.getwithus.in there before any page loads.
+ */
+export function isMainSiteHost(hostname: string): boolean {
+  return hostname === "getwithus.in";
+}
+
+/**
  * Sends one anonymous `demo_visited` event per demo per browser tab session, which PostHog
  * turns into a "Someone visited the ... demo" message in Discord. No cookies, no person
  * profile, nothing else is tracked. Does nothing without a PostHog key (local development,
- * previews) or when the browser asks not to be tracked.
+ * previews), outside getwithus.in (the proxy only exists there), or when the browser asks
+ * not to be tracked.
  */
 export function sendDemoVisit(demo: DemoSlug): void {
   const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
   if (!key || typeof window === "undefined") return;
+  if (!isMainSiteHost(window.location.hostname)) return;
   const nav = navigator as Navigator & { globalPrivacyControl?: boolean };
   if (nav.doNotTrack === "1" || nav.globalPrivacyControl === true) return;
 

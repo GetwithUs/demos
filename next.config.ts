@@ -63,6 +63,29 @@ const nextConfig: NextConfig = {
       },
     },
   },
+  async rewrites() {
+    return {
+      beforeFiles: [
+        // Prefetches through getwithus.in. On Vercel the main site turns a segment prefetch
+        // (the Next-Router-Segment-Prefetch header) into its file path, such as
+        // /demos/skincare/shop.segments/_tree.segment.rsc, and forwards that here with the
+        // prefetch headers still attached. This project's own Vercel routing then rewrites
+        // it into a segment path a second time (…shop.segments/_tree.segment.rsc.segments/
+        // _tree.segment.rsc), which does not exist: every prefetch through the main site was
+        // a 404, and links lost their instant navigation. The segment files themselves exist
+        // (Next writes them for static pages); sent straight here, the same request is a 200.
+        // beforeFiles rewrites run before Vercel's segment rewrite (vercel/vercel,
+        // packages/next/src/server-build.ts), so mapping the path back to the page lets that
+        // rewrite run once and land on the real file. Only for RSC requests, so a .segments
+        // address is never a second URL for a page.
+        {
+          source: "/:path*.segments/:segment*",
+          has: [{ type: "header", key: "rsc", value: "1" }],
+          destination: "/:path*",
+        },
+      ],
+    };
+  },
   async redirects() {
     return [
       // This project's own address (outside getwithus.in) opens on the demos index, not a 404.
