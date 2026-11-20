@@ -63,6 +63,21 @@ const nextConfig: NextConfig = {
       },
     },
   },
+  async rewrites() {
+    return {
+      beforeFiles: [
+        // Prefetches through getwithus.in. The main site uses Partial Prerendering, so on
+        // Vercel it turns a segment prefetch (the Next-Router-Segment-Prefetch header) into
+        // a path like /demos/shop.segments/_tree.segment.rsc before forwarding it here. This
+        // app has no such files, so map the path back to the page; the header still comes
+        // along, and the page answers it as it does a direct prefetch. Without this every
+        // prefetch through the main site was a 404 and links lost their instant navigation.
+        { source: "/:path*.segments/:segment*", destination: "/:path*" },
+      ],
+      afterFiles: [],
+      fallback: [],
+    };
+  },
   async redirects() {
     return [
       // This project's own address (outside getwithus.in) opens on the demos index, not a 404.
