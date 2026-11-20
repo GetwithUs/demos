@@ -1,19 +1,30 @@
 import { createRequire } from "node:module";
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { isMainSiteHost, sendDemoVisit } from "@/lib/demo-visit";
 import nextConfig from "../next.config";
 
-// The matcher Next.js itself uses for rewrites (it ships without type declarations).
-const { match } = createRequire(import.meta.url)("next/dist/compiled/path-to-regexp") as {
-  match: <P extends object>(pattern: string) => (path: string) => false | { params: P };
+// The matcher Next.js builds for every custom rewrite (server/lib/router-utils/filesystem.js),
+// with the same options. It ships without type declarations.
+const { getPathMatch } = createRequire(import.meta.url)(
+  "next/dist/shared/lib/router/utils/path-match",
+) as {
+  getPathMatch: (
+    path: string,
+    options: { strict: boolean; removeUnnamedParams: boolean },
+  ) => (pathname: string) => false | { path?: string[] };
 };
 
-/** The segment-prefetch rule, as Next applies it: under the basePath. */
+/** The segment-prefetch rule, matched as Next matches it: under the basePath. */
 async function segmentRule() {
   const rewrites = await nextConfig.rewrites?.();
   const before = (rewrites && !Array.isArray(rewrites) ? rewrites.beforeFiles : undefined) ?? [];
   const rule = before.find((r) => r.source.includes(".segments"));
   expect(rule).toBeDefined();
-  return { ...rule!, matcher: match<{ path?: string[] }>(`${nextConfig.basePath}${rule!.source}`) };
+  const matcher = getPathMatch(`${nextConfig.basePath}${rule!.source}`, {
+    strict: true,
+    removeUnnamedParams: true,
+  });
+  return { ...rule!, matcher };
 }
 
 describe("prefetches forwarded by getwithus.in", () => {
@@ -30,8 +41,13 @@ describe("prefetches forwarded by getwithus.in", () => {
     ];
     for (const [path, page] of cases) {
       const result = matcher(path);
-      expect(result && result.params.path?.join("/"), path).toBe(page);
+      expect(result && result.path?.join("/"), path).toBe(page);
     }
+  });
+
+  it("apply only to RSC requests, so a .segments address is never a second URL for a page", async () => {
+    const { has } = await segmentRule();
+    expect(has).toEqual([{ type: "header", key: "rsc", value: "1" }]);
   });
 
   it("leave ordinary pages and files alone", async () => {
@@ -43,17 +59,64 @@ describe("prefetches forwarded by getwithus.in", () => {
 });
 
 describe("visit counting", () => {
-  it("only runs where the main site's proxy exists", async () => {
-    const { isMainSiteHost } = await import("@/lib/demo-visit");
+  const fetchMock = vi.fn(() => Promise.resolve(new Response(null)));
+
+  function visitFrom(hostname: string) {
+    const stored = new Map<string, string>();
+    vi.stubGlobal("window", {
+      location: {
+        hostname,
+        href: `https://${hostname}/demos/skincare`,
+        pathname: "/demos/skincare",
+      },
+    });
+    vi.stubGlobal("navigator", {});
+    vi.stubGlobal("document", { referrer: "" });
+    vi.stubGlobal("sessionStorage", {
+      getItem: (k: string) => stored.get(k) ?? null,
+      setItem: (k: string, v: string) => void stored.set(k, v),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+  }
+
+  beforeEach(() => {
+    vi.stubEnv("NEXT_PUBLIC_POSTHOG_KEY", "phc_test");
+    fetchMock.mockClear();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
+  });
+
+  it("knows only the bare main-site domain", () => {
     expect(isMainSiteHost("getwithus.in")).toBe(true);
-    expect(isMainSiteHost("www.getwithus.in")).toBe(true);
     for (const host of [
+      "www.getwithus.in",
       "demos-blond-pi.vercel.app",
       "localhost",
       "notgetwithus.in",
-      "getwithusxin",
     ]) {
       expect(isMainSiteHost(host), host).toBe(false);
     }
+  });
+
+  it("sends one visit per demo per tab on getwithus.in", () => {
+    visitFrom("getwithus.in");
+    sendDemoVisit("skincare");
+    sendDemoVisit("skincare");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/gwr/i/v0/e/",
+      expect.objectContaining({ method: "POST" }),
+    );
+  });
+
+  it("sends nothing anywhere else, where the proxy does not exist", () => {
+    for (const host of ["demos-blond-pi.vercel.app", "localhost"]) {
+      visitFrom(host);
+      sendDemoVisit("dental-clinic");
+    }
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });

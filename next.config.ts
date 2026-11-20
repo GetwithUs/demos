@@ -72,10 +72,15 @@ const nextConfig: NextConfig = {
         // app has no such files, so map the path back to the page; the header still comes
         // along, and the page answers it as it does a direct prefetch. Without this every
         // prefetch through the main site was a 404 and links lost their instant navigation.
-        { source: "/:path*.segments/:segment*", destination: "/:path*" },
+        // Only for RSC requests, so a .segments address is never a second URL for a page.
+        // If this app ever turns on cacheComponents (and so writes real .segments files),
+        // remove this rule: it would hide them.
+        {
+          source: "/:path*.segments/:segment*",
+          has: [{ type: "header", key: "rsc", value: "1" }],
+          destination: "/:path*",
+        },
       ],
-      afterFiles: [],
-      fallback: [],
     };
   },
   async redirects() {

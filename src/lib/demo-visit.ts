@@ -9,9 +9,12 @@ export type DemoSlug = keyof typeof DEMOS;
 /** PostHog through the main site's proxy on the same origin (getwithus.in/gwr). */
 const CAPTURE_URL = "/gwr/i/v0/e/";
 
-/** getwithus.in or www.getwithus.in: where the main site (and its /gwr proxy) serves the demos. */
+/**
+ * Where the main site (and its /gwr proxy) serves the demos. Only the bare domain: the main
+ * site redirects www.getwithus.in there before any page loads.
+ */
 export function isMainSiteHost(hostname: string): boolean {
-  return hostname === "getwithus.in" || hostname === "www.getwithus.in";
+  return hostname === "getwithus.in";
 }
 
 /**

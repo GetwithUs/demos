@@ -27,6 +27,10 @@ pnpm build
   (`src/sites/skincare/components/ProductVisual.tsx`).
 - New placeholder: `pnpm placeholder <file.jpg> <width> <height> "<what it shows>" "#hex"`.
 - Visit counting: one anonymous `demo_visited` event per visit to PostHog through the main site's
-  `/gwr` proxy, which posts "Someone visited the ... demo" to Discord. Needs `NEXT_PUBLIC_POSTHOG_KEY`
-  (see `.env.example`); without it nothing is sent.
+  `/gwr` proxy, which posts "Someone visited the ... demo" to Discord. Sent only on getwithus.in
+  (the proxy exists only there), only with `NEXT_PUBLIC_POSTHOG_KEY` set (see `.env.example`),
+  and never when the browser asks not to be tracked. Local runs and this project's own Vercel
+  address send nothing.
+- Prefetches through getwithus.in: the main site turns segment prefetches into `.segments` paths,
+  which a `beforeFiles` rewrite in `next.config.ts` maps back to the page (see the comment there).
 - Research behind each demo: `docs/research/`.
