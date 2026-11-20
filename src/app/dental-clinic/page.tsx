@@ -275,7 +275,7 @@ export default function DentalHome() {
             <div className="relative mx-auto aspect-[4/5] max-w-[28rem] overflow-hidden rounded-t-[999px] rounded-b-[2rem] bg-dental-spruce lg:max-w-none">
               <Image
                 src={lounge}
-                alt="The calm reception lounge at Ivorine, with warm wood, a linen sofa and plants"
+                alt="The calm waiting area at Ivorine, with a 'Smile like you mean it' sign and an olive tree"
                 fill
                 sizes="(min-width: 1024px) 460px, 92vw"
                 className="object-cover"

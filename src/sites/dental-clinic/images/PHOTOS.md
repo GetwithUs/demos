@@ -1,8 +1,32 @@
 # Ivorine Dental Studio: photo slots
 
-Every file here is a labelled placeholder at the exact size the design uses. Replace each one with
-a real photo under the same file name and size (JPG, sRGB, about 80% quality). Pages import them
-statically, so nothing else needs to change.
+Every file here is a free Unsplash photo (Unsplash License: free to use and edit, no attribution
+required), cropped to the exact size the design uses. To swap one, replace the file under the same
+name and size (JPG, sRGB, about 80% quality). Pages import them statically, so nothing else needs
+to change.
+
+## Sources
+
+| File                  | Unsplash photo                          | Edits                                                    |
+| --------------------- | --------------------------------------- | -------------------------------------------------------- |
+| `hero.jpg`            | https://unsplash.com/photos/Bg81yWKZlMg | Cropped                                                  |
+| `studio-lounge.jpg`   | https://unsplash.com/photos/pxOQ-P97sA8 | Cropped; the sign's third line (a band name) was removed |
+| `studio-room.jpg`     | https://unsplash.com/photos/e7MJLM5VGjY | Cropped                                                  |
+| `sterilisation.jpg`   | https://unsplash.com/photos/ux18C551ghI | Cropped                                                  |
+| `digital-scan.jpg`    | https://unsplash.com/photos/v_2FRXEba94 | Cropped                                                  |
+| `consultation.jpg`    | https://unsplash.com/photos/-m-4tYmtLlI | Resized                                                  |
+| `kids.jpg`            | https://unsplash.com/photos/Y_D9bmeX1V0 | Cropped                                                  |
+| `doctor-aditi.jpg`    | https://unsplash.com/photos/P4VXFXKyOQM | Resized                                                  |
+| `doctor-kunal.jpg`    | https://unsplash.com/photos/SakqLf78KVo | Cropped                                                  |
+| `doctor-sana.jpg`     | https://unsplash.com/photos/_zbqco3m7dA | Cropped                                                  |
+| `doctor-rohan.jpg`    | https://unsplash.com/photos/PYxK4LNGn6E | Cropped                                                  |
+| `smile-whitening.jpg` | https://unsplash.com/photos/RCQnbyQsnUg | Resized                                                  |
+| `smile-aligners.jpg`  | https://unsplash.com/photos/glPVwPr1FKo | Cropped                                                  |
+| `smile-veneers.jpg`   | https://unsplash.com/photos/7Mut2WMWttA | Cropped                                                  |
+
+The people shown are models, not the (made-up) clinic's staff or patients.
+
+## What each slot needs
 
 Style for all photos: warm daylight, calm and uncluttered, soft natural tones (ivory, wood, sage
 green), real people with natural expressions. Avoid harsh blue clinical light and staged

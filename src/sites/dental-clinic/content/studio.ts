@@ -92,12 +92,12 @@ export type StudioPhoto = { src: StaticImageData; alt: string; caption: string }
 export const STUDIO_PHOTOS: StudioPhoto[] = [
   {
     src: sterilisation,
-    alt: "The sterilisation room with an autoclave and sealed instrument pouches",
-    caption: "The sterilisation room",
+    alt: "A dental mouth mirror and probe, sterilised for the next patient",
+    caption: "Instruments sterilised for every patient",
   },
   {
     src: digitalScan,
-    alt: "A dentist scanning a patient's teeth with an intraoral scanner",
+    alt: "A dentist reviewing 3D scans of a patient's teeth",
     caption: "3D scans instead of impressions",
   },
   {

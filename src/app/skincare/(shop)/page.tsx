@@ -58,7 +58,7 @@ export default function SkincareHome() {
           <div className="relative">
             <Image
               src={textureImage}
-              alt="Serum drops and a cream swirl on glass, showing Oruvi textures"
+              alt="A swirl of rich white cream, showing an Oruvi texture"
               sizes="(min-width: 1024px) 45vw, 100vw"
               className="aspect-square w-full rounded-[2rem] object-cover"
             />
@@ -172,7 +172,7 @@ function Hero() {
         <div className="relative mx-auto w-full max-w-[560px] animate-skin-fade-up [animation-delay:120ms]">
           <Image
             src={heroImage}
-            alt="A woman with dewy skin holding an Oruvi serum dropper"
+            alt="A woman with dewy skin spritzing an Oruvi face mist"
             preload
             sizes="(min-width: 1024px) 560px, 100vw"
             className="aspect-[4/5] w-full rounded-[2rem] object-cover"
@@ -335,7 +335,7 @@ function QuizTeaser() {
           <div className="relative min-h-[420px]">
             <Image
               src={routineImage}
-              alt="A woman doing her morning skincare routine at a mirror"
+              alt="A woman doing her skincare routine at a mirror"
               fill
               sizes="(min-width: 1024px) 50vw, 100vw"
               className="object-cover"
@@ -415,7 +415,7 @@ function Reviews() {
             </div>
             <Image
               src={communityImage}
-              alt="Friends with different Indian skin tones laughing together"
+              alt="Friends with different Indian skin tones smiling together"
               sizes="(min-width: 1024px) 30vw, 100vw"
               className="mt-8 hidden aspect-[7/5] w-full rounded-[1.5rem] object-cover lg:block"
             />
